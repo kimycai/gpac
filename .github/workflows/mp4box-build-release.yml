@@ -17,7 +17,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt update -y
-          sudo apt install -y gcc make libpthread-dev zlib1g-dev
+          sudo apt install -y gcc make zlib1g-dev
 
       # 步骤3：编译MP4Box（沿用静态编译+禁用zlib，按需修改）
       - name: Configure and build MP4Box
