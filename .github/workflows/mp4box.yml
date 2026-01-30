@@ -1,4 +1,4 @@
-name: Build MP4Box & Upload to Release
+name: Build MP4Box & Release
 # 触发条件：仅在打TAG时触发（规范版本发布，如v1.0.0、v2.1.1）
 on:
   push:
