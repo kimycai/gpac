@@ -1,0 +1,48 @@
+name: Build MP4Box (Manual Trigger - No Release)
+# 核心修改：移除标签自动触发，改为workflow_dispatch纯手动触发
+# 支持网页端一键点击触发，可自定义填写构建备注（可选）
+on:
+  workflow_dispatch:
+    inputs:
+      build-note:
+        description: 'Build note (optional)'
+        required: false
+        default: 'Manual build of MP4Box static binary'
+
+jobs:
+  build-mp4box:
+    runs-on: ubuntu-24.04
+    steps:
+      # 步骤1：拉取GPAC源码（最新主分支代码）
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # 步骤2：安装官方要求的编译依赖（gcc/make/libpthread-dev，无冗余）
+      - name: Install official build dependencies
+        run: |
+          sudo apt update -y
+          sudo apt install -y gcc make libpthread-dev
+          # 验证依赖安装，方便排错
+          gcc --version && make --version
+
+      # 步骤3：官方标准静态编译MP4Box（命令与官方文档完全一致）
+      - name: Build MP4Box (Official Static Build)
+        run: |
+          ./configure --static-mp4box --use-zlib=no
+          make -j4
+          # 验证编译成功，检查产物信息（大小、类型、是否存在）
+          ls -lh bin/gcc/MP4Box && file bin/gcc/MP4Box
+
+      # 步骤4：重命名产物（标识系统/架构，方便识别，Linux x64 静态编译）
+      - name: Rename MP4Box binary
+        run: mv bin/gcc/MP4Box bin/gcc/mp4box-linux-x64-static
+
+      # 步骤5：上传产物到Actions（唯一下载入口，保留90天，可直接下载）
+      - name: Upload MP4Box artifact to Actions
+        uses: actions/upload-artifact@v4
+        with:
+          name: mp4box-linux-x64-static
+          path: bin/gcc/mp4box-linux-x64-static
+          retention-days: 90 # 产物保留90天，可修改（1-90天）
