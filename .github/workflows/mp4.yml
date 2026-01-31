@@ -23,7 +23,7 @@ jobs:
       - name: Install official build dependencies
         run: |
           sudo apt update -y
-          sudo apt install -y gcc make libpthread-dev
+          sudo apt install -y gcc make
           # 验证依赖安装，方便排错
           gcc --version && make --version
 
